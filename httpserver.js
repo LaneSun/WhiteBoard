@@ -6,7 +6,7 @@ http.createServer(function (req, res) {
     __dirname = "client"
     var pathname=__dirname+url.parse(req.url).pathname;
     if (path.extname(pathname)=="") {
-        pathname+="/";
+        // pathname+="/";
     }
     if (pathname.charAt(pathname.length-1)=="/"){
         pathname+="index.html";
@@ -40,9 +40,11 @@ http.createServer(function (req, res) {
             fs.readFile(pathname,function (err,data){
                 res.end(data);
             });
+            console.log("Get " + pathname + " success !")
         } else {
             res.writeHead(404, {"Content-Type": "text/html"});
             res.end("<h1>404 Not Found</h1>");
+            console.error("Get " + pathname + " fail !")
         }
     });
 }).listen(8080);

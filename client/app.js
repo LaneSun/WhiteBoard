@@ -1,4 +1,4 @@
-WEBURL = "ws://192.168.199.220:9000";
+WEBURL = "ws://io.anlbrain.com:10126";
 STARTDRAW = 101;
 STOPDRAW = 102;
 NEWPOINT = 103;
@@ -42,7 +42,7 @@ function setPanel(){
     Panel.ctx.imageSmoothingQuality = "high";
 }
 function attachEvent() {
-    Panel.elem.onmousedown = function (e) {
+    var startHandle = function (e) {
         addLocalPoint(e.offsetX,e.offsetY);
         Link.send({
             data: STARTDRAW,
@@ -50,11 +50,11 @@ function attachEvent() {
             y: e.offsetY
         })
     };
-    document.onmouseup = function () {
+    var endHandle = function () {
         Panel.state = STOPDRAW;
         Link.send({data: STOPDRAW})
     };
-    Panel.elem.onmousemove = function (e) {
+    var moveHandle = function (e) {
         if(Panel.state == STARTDRAW){
             addLocalPoint(e.offsetX,e.offsetY);
             Link.send({
@@ -63,7 +63,35 @@ function attachEvent() {
                 y: e.offsetY
             })
         }
-    }
+    };
+    var touchstartHandle = function (e) {
+        addLocalPoint(e.touches[0].offsetX,e.touches[0].offsetY);
+        Link.send({
+            data: STARTDRAW,
+            x: e.touches[0].offsetX,
+            y: e.touches[0].offsetY
+        })
+    };
+    var touchendHandle = function () {
+        Panel.state = STOPDRAW;
+        Link.send({data: STOPDRAW})
+    };
+    var touchmoveHandle = function (e) {
+        if(Panel.state == STARTDRAW){
+            addLocalPoint(e.touches[0].offsetX,e.touches[0].offsetY);
+            Link.send({
+                data: NEWPOINT,
+                x: e.touches[0].offsetX,
+                y: e.touches[0].offsetY
+            })
+        }
+    };
+    Panel.elem.addEventListener("touchstart",touchstartHandle.bind(this));
+    Panel.elem.addEventListener("mousedown",startHandle.bind(this));
+    Panel.elem.addEventListener("touchmove",touchmoveHandle.bind(this));
+    Panel.elem.addEventListener("mousemove",moveHandle.bind(this));
+    Panel.elem.addEventListener("touchend",touchendHandle.bind(this));
+    Panel.elem.addEventListener("mouseup",endHandle.bind(this));
 }
 Link.onmessage = function (msg) {
     switch (msg.data){

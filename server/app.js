@@ -24,4 +24,4 @@ function broadcast(msg) {
     })
 }
 
-console.log("Server starts at 192.168.199.220:9000");
+console.log("Server running at 192.168.199.220:9000");
