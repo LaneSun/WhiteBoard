@@ -65,11 +65,13 @@ function attachEvent() {
         }
     };
     var touchstartHandle = function (e) {
-        addLocalPoint(e.touches[0].offsetX,e.touches[0].offsetY);
+        var offsetX = e.touches[0].pageX - Panel.elem.offsetLeft;
+        var offsetY = e.touches[0].pageY - Panel.elem.offsetTop;
+        addLocalPoint(offsetX,offsetY);
         Link.send({
             data: STARTDRAW,
-            x: e.touches[0].offsetX,
-            y: e.touches[0].offsetY
+            x: offsetX,
+            y: offsetY
         })
     };
     var touchendHandle = function () {
@@ -77,12 +79,14 @@ function attachEvent() {
         Link.send({data: STOPDRAW})
     };
     var touchmoveHandle = function (e) {
+        var offsetX = e.touches[0].pageX - Panel.elem.offsetLeft;
+        var offsetY = e.touches[0].pageY - Panel.elem.offsetTop;
         if(Panel.state == STARTDRAW){
-            addLocalPoint(e.touches[0].offsetX,e.touches[0].offsetY);
+            addLocalPoint(offsetX,offsetY);
             Link.send({
                 data: NEWPOINT,
-                x: e.touches[0].offsetX,
-                y: e.touches[0].offsetY
+                x: offsetX,
+                y: offsetY
             })
         }
     };
